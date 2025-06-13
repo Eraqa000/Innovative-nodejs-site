@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function CourseCard({ course }) {
   return (
     <Link
@@ -8,7 +10,7 @@ export default function CourseCard({ course }) {
       className="block bg-white bg-opacity-10 rounded-lg overflow-hidden shadow hover:bg-opacity-20 transition"
     >
       <img
-        src={course.posterUrl ? `http://localhost:5000${course.posterUrl}` : "/video-placeholder.png"}
+        src={course.posterUrl ? `${API_URL}${course.posterUrl}` : "/video-placeholder.png"}
         alt={course.title}
         className="w-full h-40 object-cover"
       />
