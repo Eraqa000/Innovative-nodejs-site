@@ -21,7 +21,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI })
 }));
 
 app.use('/api/auth', authRoutes);
@@ -40,6 +40,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
-mongoose.connect(process.env.MONGO_URI).then(() => {
+mongoose.connect(process.env.MONGODB_URI).then(() => {
     app.listen(5000, () => console.log('Server started on port 5000'));
 });
