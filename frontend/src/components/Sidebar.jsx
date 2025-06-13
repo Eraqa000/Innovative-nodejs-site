@@ -1,6 +1,8 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { HomeIcon, UserIcon, ClipboardIcon, SparklesIcon, InformationCircleIcon, ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
+import { fetchWithCredentials } from "./api"; // путь поправь
+
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -8,18 +10,17 @@ function Sidebar() {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/profile", { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setProfile(data));
-  }, [location.pathname]);
+  fetchWithCredentials("/api/auth/profile")
+    .then(res => res.ok ? res.json() : null)
+    .then(data => setProfile(data));
+}, [location.pathname]);
 
   async function handleLogout() {
-    await fetch('http://localhost:5000/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-    navigate('/login');
-  }
+  await fetchWithCredentials("/api/auth/logout", {
+    method: "POST"
+  });
+  navigate("/login");
+}
 
   // Только содержимое aside!
   if (!profile) {
