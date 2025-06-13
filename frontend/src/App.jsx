@@ -22,13 +22,13 @@ function Sidebar() {
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/profile", { credentials: "include" })
+    fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, { credentials: "include" })
       .then(res => res.ok ? res.json() : null)
       .then(data => setProfile(data))
   }, [location.pathname])
 
   async function handleLogout() {
-    await fetch('http://localhost:5000/api/auth/logout', {
+    await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
       method: 'POST',
       credentials: 'include',
     })
