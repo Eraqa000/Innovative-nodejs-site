@@ -28,11 +28,16 @@ app.use(cors({
 app.use(helmet());
 
 app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI })
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+  cookie: {
+    secure: true,        // Обязательно для HTTPS
+    sameSite: 'none'     // Обязательно для кросс-доменных запросов
+  }
 }));
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', coursesRoutes);
