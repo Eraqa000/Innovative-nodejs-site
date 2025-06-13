@@ -43,9 +43,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/search', searchRouter);
 app.use('/uploads', (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Cross-Origin-Resource-Policy", "cross-origin");
+  if (allowedOrigins.includes(req.headers.origin)) {
+    res.header("Access-Control-Allow-Origin", req.headers.origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Cross-Origin-Resource-Policy", "cross-origin");
+  }
   next();
 }, express.static(path.join(process.cwd(), 'uploads')));
 app.use('/uploads/videos', express.static(path.join(process.cwd(), 'uploads/videos')));
