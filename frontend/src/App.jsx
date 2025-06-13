@@ -22,10 +22,20 @@ function Sidebar() {
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setProfile(data))
-  }, [location.pathname])
+  fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, {
+    credentials: "include",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error('Не авторизован')
+      return res.json()
+    })
+    .then((data) => setProfile(data))
+    .catch((err) => {
+      console.error('Ошибка при загрузке профиля:', err)
+      setProfile(null)
+    })
+}, [location.pathname])
+
 
   async function handleLogout() {
     await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
@@ -110,7 +120,7 @@ function Sidebar() {
       <div className="flex flex-col items-center mb-8">
         <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2">
           {profile && profile.avatar ? (
-            <img src={`http://localhost:5000${profile.avatar}`} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
+            <img src={`${import.meta.env.VITE_API_URL.replace('/api', '')}${profile.avatar}`} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
           ) : (
             <UserIcon className="h-8 w-8 text-gray-400" />
           )}
