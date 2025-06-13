@@ -13,12 +13,18 @@ import path from 'path';
 dotenv.config();
 const app = express();
 
-app.use(express.json());
+const allowedOrigins = [process.env.LOCAL_ORIGIN, process.env.PROD_ORIGIN];
+
 app.use(cors({
-  origin: [process.env.LOCAL_ORIGIN, process.env.PROD_ORIGIN],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
-
 app.use(helmet());
 
 app.use(session({
