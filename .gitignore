@@ -1,0 +1,18 @@
+# Node modules
+**/node_modules/
+
+# Environment
+**/.env
+
+# MongoDB data
+mongodb-data/
+
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+*.mp4
+*.MP4
