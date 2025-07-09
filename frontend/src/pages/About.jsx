@@ -1,6 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function About() {
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    axiosInstance
+      .get("/api/auth/profile")
+      .then((res) => setProfile(res.data))
+      .catch(() => setProfile(null));
+  }, []);
+
   return (
     <section className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900 text-white px-4">
       <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl shadow-2xl p-8 sm:p-12 max-w-2xl w-full transition">
@@ -20,6 +30,12 @@ export default function About() {
           <li>Удобная и понятная навигация</li>
           <li>Функционал для авторизации, курсов и рекомендаций</li>
         </ul>
+        {profile && (
+          <div className="mt-8 text-center text-blue-300">
+            Вы вошли как:{" "}
+            <span className="font-semibold">{profile.username}</span>
+          </div>
+        )}
       </div>
     </section>
   );

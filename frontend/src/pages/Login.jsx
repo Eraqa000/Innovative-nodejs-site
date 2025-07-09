@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -10,15 +11,10 @@ export default function Login() {
   async function handleLogin(e) {
     e.preventDefault();
     setError("");
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-      credentials: "include",
-    });
-    if (res.ok) {
+    try {
+      await axiosInstance.post("/api/auth/login", { username, password });
       navigate("/profile");
-    } else {
+    } catch (err) {
       setError("Неверный логин или пароль");
     }
   }

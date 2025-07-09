@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function Home() {
   const [popularCourses, setPopularCourses] = useState([]);
@@ -10,25 +11,23 @@ export default function Home() {
   const [searching, setSearching] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/courses?recommended=1", { credentials: "include" })
-      .then(res => res.json())
-      .then(data => setPopularCourses(data.slice(0, 3)));
+    axiosInstance.get("/api/courses?recommended=1")
+      .then(res => setPopularCourses(res.data.slice(0, 3)));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/profile", { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setProfile(data));
+    axiosInstance.get("/api/auth/profile")
+      .then(res => setProfile(res.data))
+      .catch(() => setProfile(null));
   }, []);
 
   function handleSearch(e) {
     e.preventDefault();
     if (!search.trim()) return;
     setSearching(true);
-    fetch(`http://localhost:5000/api/search?q=${encodeURIComponent(search)}`, { credentials: "include" })
-      .then(res => res.json())
-      .then(data => {
-        setSearchResults(data);
+    axiosInstance.get(`/api/search?q=${encodeURIComponent(search)}`)
+      .then(res => {
+        setSearchResults(res.data);
         setSearching(false);
       });
   }

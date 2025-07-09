@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { FaInstagram, FaVk, FaTelegram, FaYoutube, FaGlobe } from "react-icons/fa";
+import axiosInstance from "../utils/axiosInstance"; // добавьте импорт
 
 function getSocialIcon(url) {
   if (!url) return <FaGlobe />;
@@ -40,23 +41,19 @@ export default function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Пример запроса профиля
-    fetch("http://localhost:5000/api/auth/profile", { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setProfile(data));
+    axiosInstance.get("/api/auth/profile")
+      .then(res => setProfile(res.data))
+      .catch(() => setProfile(null));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/courses/subscriptions", { credentials: "include" })
-      .then(res => res.ok ? res.json() : [])
-      .then(data => setSubscribedCourses(data));
+    axiosInstance.get("/api/courses/subscriptions")
+      .then(res => setSubscribedCourses(res.data))
+      .catch(() => setSubscribedCourses([]));
   }, []);
 
   async function handleLogout() {
-    await fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    await axiosInstance.post("/api/auth/logout");
     navigate("/login");
   }
 
@@ -64,14 +61,9 @@ export default function Profile() {
   async function uploadAvatar(file) {
     const formData = new FormData();
     formData.append("avatar", file);
-    const res = await fetch("http://localhost:5000/api/auth/avatar", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setProfile(p => ({ ...p, avatar: data.avatar }));
+    const res = await axiosInstance.post("/api/auth/avatar", formData);
+    if (res.status === 200) {
+      setProfile(p => ({ ...p, avatar: res.data.avatar }));
     }
   }
 
@@ -79,32 +71,21 @@ export default function Profile() {
   async function uploadCover(file) {
     const formData = new FormData();
     formData.append("cover", file);
-    const res = await fetch("http://localhost:5000/api/auth/cover", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setProfile(p => ({ ...p, cover: data.cover }));
+    const res = await axiosInstance.post("/api/auth/cover", formData);
+    if (res.status === 200) {
+      setProfile(p => ({ ...p, cover: res.data.cover }));
     }
   }
 
   async function handleSave(e) {
     e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/auth/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        name: form.name,
-        bio: form.bio,
-        links: form.links.split(",").map(l => l.trim()).filter(Boolean),
-      }),
+    const res = await axiosInstance.put("/api/auth/profile", {
+      name: form.name,
+      bio: form.bio,
+      links: form.links.split(",").map(l => l.trim()).filter(Boolean),
     });
-    if (res.ok) {
-      const data = await res.json();
-      setProfile(data);
+    if (res.status === 200) {
+      setProfile(res.data);
       setEdit(false);
     }
   }
@@ -112,13 +93,8 @@ export default function Profile() {
   // Получить подробную инфу о подписчиках/подписках
   async function fetchUsersByIds(ids) {
     if (!ids || ids.length === 0) return [];
-    const res = await fetch("http://localhost:5000/api/auth/users-by-ids", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ ids }),
-    });
-    if (res.ok) return res.json();
+    const res = await axiosInstance.post("/api/auth/users-by-ids", { ids });
+    if (res.status === 200) return res.data;
     return [];
   }
 

@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function Dashboard() {
+  const [stats, setStats] = useState({ projects: 0, tasks: 0, notifications: 0 });
+
+  useEffect(() => {
+    axiosInstance.get("/api/dashboard/stats")
+      .then(res => setStats(res.data))
+      .catch(() => setStats({ projects: 0, tasks: 0, notifications: 0 }));
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-900 to-pink-900 text-white px-4">
       <div className="bg-white bg-opacity-10 rounded-xl shadow-lg p-8 max-w-xl w-full">
@@ -10,15 +19,15 @@ export default function Dashboard() {
         </p>
         <div className="flex justify-center gap-8 mt-6">
           <div className="flex flex-col items-center">
-            <span className="text-2xl font-bold">12</span>
+            <span className="text-2xl font-bold">{stats.projects}</span>
             <span className="text-sm text-gray-200">Проектов</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-2xl font-bold">5</span>
+            <span className="text-2xl font-bold">{stats.tasks}</span>
             <span className="text-sm text-gray-200">Задач</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-2xl font-bold">3</span>
+            <span className="text-2xl font-bold">{stats.notifications}</span>
             <span className="text-sm text-gray-200">Уведомления</span>
           </div>
         </div>

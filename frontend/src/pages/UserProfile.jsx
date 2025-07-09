@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import CourseCard from "../components/CourseCard"; // Импорт карточки курса
+import CourseCard from "../components/CourseCard";
+import axiosInstance from "../utils/axiosInstance"; // добавьте импорт
 
 const socialIcons = {
   instagram: (
@@ -38,20 +39,18 @@ export default function UserProfile() {
   const [subscriptions, setSubscriptions] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/auth/user/${id}`, { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setUser(data));
-    fetch(`http://localhost:5000/api/courses?author=${id}`, { credentials: "include" })
-      .then(res => res.ok ? res.json() : [])
-      .then(data => setCourses(data));
-    fetch("http://localhost:5000/api/auth/profile", { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setProfile(data));
-    // Получить курсы, на которые подписан пользователь (если это свой профиль)
+    axiosInstance.get(`/api/auth/user/${id}`)
+      .then(res => setUser(res.data));
+    axiosInstance.get(`/api/courses?author=${id}`)
+      .then(res => setCourses(res.data));
+    axiosInstance.get("/api/auth/profile")
+      .then(res => setProfile(res.data));
+  }, [id]);
+
+  useEffect(() => {
     if (profile && profile._id === id) {
-      fetch("http://localhost:5000/api/courses/subscriptions", { credentials: "include" })
-        .then(res => res.ok ? res.json() : [])
-        .then(setSubscriptions);
+      axiosInstance.get("/api/courses/subscriptions")
+        .then(res => setSubscriptions(res.data));
     }
   }, [id, profile]);
 
@@ -62,10 +61,7 @@ export default function UserProfile() {
   }, [user, profile]);
 
   const handleSubscribe = async () => {
-    await fetch(`http://localhost:5000/api/auth/user/${id}/follow`, {
-      method: "POST",
-      credentials: "include"
-    });
+    await axiosInstance.post(`/api/auth/user/${id}/follow`);
     setUser(prev => ({
       ...prev,
       followers: [...(prev.followers || []), profile._id]
@@ -74,10 +70,7 @@ export default function UserProfile() {
   };
 
   const handleUnsubscribe = async () => {
-    await fetch(`http://localhost:5000/api/auth/user/${id}/unfollow`, {
-      method: "POST",
-      credentials: "include"
-    });
+    await axiosInstance.post(`/api/auth/user/${id}/unfollow`);
     setUser(prev => ({
       ...prev,
       followers: (prev.followers || []).filter(f => f !== profile._id)

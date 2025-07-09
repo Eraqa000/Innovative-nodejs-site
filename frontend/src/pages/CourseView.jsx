@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function CourseView() {
   const { id } = useParams();
@@ -8,33 +9,26 @@ export default function CourseView() {
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/courses/${id}`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        setCourse(data);
+    axiosInstance.get(`/api/courses/${id}`)
+      .then(res => {
+        setCourse(res.data);
         setLoading(false);
       });
     // Проверка подписки (можно доработать под вашу логику)
-    fetch("http://localhost:5000/api/auth/profile", { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(user => {
+    axiosInstance.get("/api/auth/profile")
+      .then(res => {
+        const user = res.data;
         if (user && user.subscribedCourses?.includes(id)) setSubscribed(true);
       });
   }, [id]);
 
   async function handleSubscribe() {
-    await fetch(`http://localhost:5000/api/courses/${id}/subscribe`, {
-      method: "POST",
-      credentials: "include"
-    });
+    await axiosInstance.post(`/api/courses/${id}/subscribe`);
     setSubscribed(true);
   }
 
   async function handleUnsubscribe() {
-    await fetch(`http://localhost:5000/api/courses/${id}/unsubscribe`, {
-      method: "POST",
-      credentials: "include"
-    });
+    await axiosInstance.post(`/api/courses/${id}/unsubscribe`);
     setSubscribed(false);
   }
 

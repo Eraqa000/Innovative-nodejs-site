@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function UploadCourse() {
   const [title, setTitle] = useState("");
@@ -15,13 +16,11 @@ export default function UploadCourse() {
     formData.append("video", video);
     formData.append("isPrivate", isPrivate);
     formData.append("allowedSubscriptions", allowedSubscriptions);
-    const res = await fetch("http://localhost:5000/api/courses/upload", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-    if (res.ok) {
+    try {
+      await axiosInstance.post("/api/courses/upload", formData);
       alert("Курс загружен!");
+    } catch {
+      alert("Ошибка загрузки курса");
     }
   }
 

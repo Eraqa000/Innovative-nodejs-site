@@ -25,6 +25,7 @@ import Subscription from './pages/Subscription'
 import UserProfile from './pages/UserProfile'
 import CourseDetail from './pages/CourseDetail'
 import CourseView from './pages/CourseView'
+import axiosInstance from './utils/axiosInstance';
 
 const Sidebar = () => {
   const navigate = useNavigate()
@@ -32,18 +33,12 @@ const Sidebar = () => {
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, {
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Не авторизован')
-        return res.json()
-      })
-      .then((data) => setProfile(data))
-      .catch((err) => {
-        console.error('Ошибка при загрузке профиля:', err)
-        setProfile(null)
-      })
+    axiosInstance.get('/api/auth/profile')
+      .then(res => setProfile(res.data))
+      .catch(err => {
+        console.error('Ошибка при загрузке профиля:', err);
+        setProfile(null);
+      });
   }, [location.pathname])
 
   async function handleLogout() {

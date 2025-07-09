@@ -1,5 +1,8 @@
+// src/pages/Register.jsx
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -10,17 +13,16 @@ export default function Register() {
   async function handleRegister(e) {
     e.preventDefault();
     setError("");
-    const res = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-      credentials: "include",
-    });
-    if (res.ok) {
+
+    try {
+      await axiosInstance.post("/api/auth/register", { username, password });
       navigate("/login");
-    } else {
-      const data = await res.json().catch(() => ({}));
-      setError(data.message || "Ошибка регистрации");
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Ошибка регистрации");
+      }
     }
   }
 
@@ -55,7 +57,10 @@ export default function Register() {
         </button>
         {error && <div className="text-red-400 text-center">{error}</div>}
         <p className="text-center text-gray-300 text-sm mt-2">
-          Уже есть аккаунт? <a href="/login" className="text-green-300 underline">Войти</a>
+          Уже есть аккаунт?{" "}
+          <a href="/login" className="text-green-300 underline">
+            Войти
+          </a>
         </p>
       </form>
     </div>

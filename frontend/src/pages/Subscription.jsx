@@ -1,9 +1,18 @@
 import React from "react";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function Subscription() {
   // Здесь будет обработка оплаты (заглушка)
   function handleSubscribe() {
-    alert("Здесь будет оформление подписки (интеграция с платежной системой)");
+    // Пример запроса на backend для оформления подписки (заглушка)
+    axiosInstance
+      .post("/api/subscription/start")
+      .then(() => {
+        alert("Подписка успешно оформлена! (заглушка)");
+      })
+      .catch(() => {
+        alert("Ошибка оформления подписки (заглушка)");
+      });
     // Тут можно реализовать переход на оплату через Stripe, ЮKassa и т.д.
   }
 

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { HomeIcon, UserIcon, ClipboardIcon, SparklesIcon, InformationCircleIcon, ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { fetchWithCredentials } from "./api"; // путь поправь
+import axiosInstance from "../utils/axiosInstance";
 
 
 function Sidebar() {
@@ -10,17 +10,16 @@ function Sidebar() {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-  fetchWithCredentials("/api/auth/profile")
-    .then(res => res.ok ? res.json() : null)
-    .then(data => setProfile(data));
-}, [location.pathname]);
+    axiosInstance
+      .get("/api/auth/profile")
+      .then(res => setProfile(res.data))
+      .catch(() => setProfile(null));
+  }, [location.pathname]);
 
   async function handleLogout() {
-  await fetchWithCredentials("/api/auth/logout", {
-    method: "POST"
-  });
-  navigate("/login");
-}
+    await axiosInstance.post("/api/auth/logout");
+    navigate("/login");
+  }
 
   // Только содержимое aside!
   if (!profile) {

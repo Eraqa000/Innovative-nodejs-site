@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CourseCard from "../components/CourseCard";
+import axiosInstance from "../utils/axiosInstance";
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -10,9 +11,10 @@ export default function Courses() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/courses?author=me", { credentials: "include" })
-      .then(res => res.ok ? res.json() : [])
-      .then(setCourses);
+    axiosInstance
+      .get("/api/courses?author=me")
+      .then(res => setCourses(res.data))
+      .catch(() => setCourses([]));
   }, []);
 
   async function handleSubmit(e) {
@@ -22,22 +24,19 @@ export default function Courses() {
     formData.append("title", title);
     formData.append("description", description);
     if (poster) formData.append("poster", poster);
-    const res = await fetch("http://localhost:5000/api/courses/upload", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-    if (res.ok) {
+    try {
+      await axiosInstance.post("/api/courses/upload", formData);
       setTitle("");
       setDescription("");
       setPoster(null);
       setShowForm(false);
       setLoading(false);
-      // Здесь тоже должен быть тот же запрос, что и в useEffect:
-      fetch("http://localhost:5000/api/courses?author=me", { credentials: "include" })
-        .then(res => res.ok ? res.json() : [])
-        .then(setCourses);
-    } else {
+      // Обновить список курсов
+      axiosInstance
+        .get("/api/courses?author=me")
+        .then(res => setCourses(res.data))
+        .catch(() => setCourses([]));
+    } catch {
       setLoading(false);
       alert("Ошибка создания курса");
     }
@@ -45,13 +44,10 @@ export default function Courses() {
 
   async function handleDelete(courseId) {
     if (!window.confirm("Вы уверены, что хотите удалить этот курс?")) return;
-    const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-      method: "DELETE",
-      credentials: "include"
-    });
-    if (res.ok) {
+    try {
+      await axiosInstance.delete(`/api/courses/${courseId}`);
       setCourses(courses => courses.filter(c => c._id !== courseId));
-    } else {
+    } catch {
       alert("Ошибка удаления курса");
     }
   }

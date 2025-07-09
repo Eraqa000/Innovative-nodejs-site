@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { UserIcon } from "@heroicons/react/24/outline";
+import axiosInstance from "../utils/axiosInstance";
 
 function VideoCard({ video, idx, courseId, refreshCourse }) {
   const handleDelete = async () => {
     const confirmDelete = window.confirm("Вы уверены, что хотите удалить это видео?");
     if (!confirmDelete) return;
-    await fetch(`http://localhost:5000/api/courses/${courseId}/video/${idx}`, {
-      method: "DELETE",
-      credentials: "include"
-    });
+    await axiosInstance.delete(`/api/courses/${courseId}/video/${idx}`);
     refreshCourse();
   };
 
@@ -50,29 +48,29 @@ export default function CourseDetail() {
   const [userId, setUserId] = useState(null);
 
   const refreshCourse = () => {
-    fetch(`http://localhost:5000/api/courses/${id}`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        setCourse(data);
+    axiosInstance.get(`/api/courses/${id}`)
+      .then(res => {
+        setCourse(res.data);
         setLoading(false);
       });
   };
 
   useEffect(() => {
     refreshCourse();
+    // eslint-disable-next-line
   }, [id]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/profile", { credentials: "include" })
-      .then(res => res.ok ? res.json() : null)
-      .then(user => {
-        if (user) {
-          setUserId(user._id);
-          if (course && user.subscribedCourses?.includes(course._id)) {
-            setSubscribed(true);
-          }
+    axiosInstance.get("/api/auth/profile")
+      .then(res => {
+        const user = res.data;
+        setUserId(user._id);
+        if (course && user.subscribedCourses?.includes(course._id)) {
+          setSubscribed(true);
         }
-      });
+      })
+      .catch(() => setUserId(null));
+    // eslint-disable-next-line
   }, [course]);
 
   useEffect(() => {
@@ -90,37 +88,23 @@ export default function CourseDetail() {
     formData.append("video", videoFile);
     if (videoPoster) formData.append("poster", videoPoster);
     formData.append("courseId", id);
-    const res = await fetch("http://localhost:5000/api/courses/upload-video", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-    if (res.ok) {
-      setShowForm(false);
-      setVideoTitle("");
-      setVideoDescription("");
-      setVideoFile(null);
-      setVideoPoster(null);
-      refreshCourse();
-    } else {
-      alert("Ошибка загрузки видео");
-    }
+    await axiosInstance.post("/api/courses/upload-video", formData);
+    setShowForm(false);
+    setVideoTitle("");
+    setVideoDescription("");
+    setVideoFile(null);
+    setVideoPoster(null);
+    refreshCourse();
     setUploading(false);
   }
 
   async function handleSubscribe() {
-    await fetch(`http://localhost:5000/api/courses/${course._id}/subscribe`, {
-      method: "POST",
-      credentials: "include"
-    });
+    await axiosInstance.post(`/api/courses/${course._id}/subscribe`);
     setSubscribed(true);
   }
 
   async function handleUnsubscribe() {
-    await fetch(`http://localhost:5000/api/courses/${course._id}/unsubscribe`, {
-      method: "POST",
-      credentials: "include"
-    });
+    await axiosInstance.post(`/api/courses/${course._id}/unsubscribe`);
     setSubscribed(false);
   }
 
