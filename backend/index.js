@@ -59,6 +59,19 @@ app.use('/uploads', (req, res, next) => {
 
 app.use('/uploads/videos', express.static(path.join(process.cwd(), 'uploads/videos')));
 
+// Отдача фронтенда для SPA (React) - все пути, кроме /api и /uploads, отдаем index.html
+app.use((req, res, next) => {
+  if (
+    !req.path.startsWith('/api') &&
+    !req.path.startsWith('/uploads') &&
+    !req.path.startsWith('/favicon.ico')
+  ) {
+    res.sendFile(path.join(process.cwd(), 'frontend', 'dist', 'index.html'));
+  } else {
+    next();
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: err.message });
