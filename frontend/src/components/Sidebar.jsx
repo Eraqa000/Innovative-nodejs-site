@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { HomeIcon, UserIcon, ClipboardIcon, SparklesIcon, InformationCircleIcon, ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance, { API_URL } from "../utils/axiosInstance";
 
 
 function Sidebar() {
@@ -96,7 +96,7 @@ function Sidebar() {
       <div className="flex flex-col items-center mb-8">
         <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2">
           {profile.avatar ? (
-            <img src={`http://localhost:5000${profile.avatar}`} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
+            <img src={`${API_URL}${profile.avatar}`} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
           ) : (
             <UserIcon className="h-8 w-8 text-gray-400" />
           )}

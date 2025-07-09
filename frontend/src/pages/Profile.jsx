@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { FaInstagram, FaVk, FaTelegram, FaYoutube, FaGlobe } from "react-icons/fa";
-import axiosInstance from "../utils/axiosInstance"; // добавьте импорт
+import axiosInstance, { API_URL } from "../utils/axiosInstance"; // добавьте импорт
 
 function getSocialIcon(url) {
   if (!url) return <FaGlobe />;
@@ -107,10 +107,7 @@ export default function Profile() {
 
   // Отписаться от пользователя
   async function handleUnfollow(userId) {
-    await fetch(`http://localhost:5000/api/auth/user/${userId}/unfollow`, {
-      method: "POST",
-      credentials: "include",
-    });
+    await axiosInstance.post(`/api/auth/user/${userId}/unfollow`);
     setFollowingList(list => list.filter(u => u._id !== userId));
     setProfile(p => ({
       ...p,
@@ -133,7 +130,7 @@ export default function Profile() {
         >
           {profile.cover ? (
             <img
-              src={`http://localhost:5000${profile.cover}`}
+              src={`${API_URL}${profile.cover}`}
               alt="cover"
               className="absolute inset-0 w-full h-full object-cover rounded-b-xl"
               style={{ zIndex: 1 }}
@@ -161,7 +158,7 @@ export default function Profile() {
             onDragOver={e => e.preventDefault()}
           >
             {profile.avatar ? (
-              <img src={`http://localhost:5000${profile.avatar}`} alt="avatar" className="w-24 h-24 rounded-full object-cover" />
+              <img src={`${API_URL}${profile.avatar}`} alt="avatar" className="w-24 h-24 rounded-full object-cover" />
             ) : (
               <UserIcon className="h-16 w-16 text-gray-400" />
             )}
@@ -332,7 +329,7 @@ export default function Profile() {
                           onClick={() => setShowFollowers(false)}
                         >
                           {u.avatar && (
-                            <img src={`http://localhost:5000${u.avatar}`} alt="" className="w-7 h-7 rounded-full object-cover" />
+                            <img src={`${API_URL}${u.avatar}`} alt="" className="w-7 h-7 rounded-full object-cover" />
                           )}
                           <span>{u.name || u.username}</span>
                         </Link>
@@ -355,7 +352,7 @@ export default function Profile() {
                             onClick={() => setShowFollowers(false)}
                           >
                             {u.avatar && (
-                              <img src={`http://localhost:5000${u.avatar}`} alt="" className="w-7 h-7 rounded-full object-cover" />
+                              <img src={`${API_URL}${u.avatar}`} alt="" className="w-7 h-7 rounded-full object-cover" />
                             )}
                             <span>{u.name || u.username}</span>
                           </Link>
@@ -409,7 +406,7 @@ export default function Profile() {
                   <div key={course._id} className="bg-white bg-opacity-20 rounded-xl shadow p-3 w-56 flex flex-col items-center">
                     {course.posterUrl && (
                       <img
-                        src={`http://localhost:5000${course.posterUrl}`}
+                        src={`${API_URL}${course.posterUrl}`}
                         alt={course.title}
                         className="w-full h-32 object-cover rounded mb-2"
                       />

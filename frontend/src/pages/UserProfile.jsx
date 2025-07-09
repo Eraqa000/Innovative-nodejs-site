@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CourseCard from "../components/CourseCard";
-import axiosInstance from "../utils/axiosInstance"; // добавьте импорт
+import axiosInstance, { API_URL } from "../utils/axiosInstance"; // добавьте импорт
 
 const socialIcons = {
   instagram: (
@@ -86,14 +86,14 @@ export default function UserProfile() {
         <div className="relative bg-white bg-opacity-10 rounded-xl p-8 text-center mb-8">
           {user.cover && (
             <img
-              src={`http://localhost:5000${user.cover}`}
+              src={`${API_URL}${user.cover}`}
               alt="cover"
               className="w-full h-48 object-cover rounded-xl mb-4"
             />
           )}
           <div className="flex flex-col items-center -mt-16">
             <img
-              src={user.avatar ? `http://localhost:5000${user.avatar}` : "/avatar-placeholder.png"}
+              src={user.avatar ? `${API_URL}${user.avatar}` : "/avatar-placeholder.png"}
               alt="avatar"
               className="w-32 h-32 rounded-full border-4 border-indigo-700 object-cover bg-white mb-2"
             />

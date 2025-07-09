@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance, { API_URL } from "../utils/axiosInstance";
 
 export default function Home() {
   const [popularCourses, setPopularCourses] = useState([]);
@@ -148,9 +148,9 @@ export default function Home() {
                 <div key={course._id} className="bg-white bg-opacity-15 rounded-2xl p-4 flex flex-col items-center shadow-xl relative hover:scale-105 transition-transform border border-indigo-700">
                   <div className="relative pb-[56.25%] w-full mb-3 rounded-xl overflow-hidden bg-black">
                     <video
-                      src={`http://localhost:5000${course.videoUrl}`}
+                      src={course.videoUrl ? `${API_URL}${course.videoUrl}` : undefined}
                       className={`absolute top-0 left-0 w-full h-full object-cover ${!allowed ? "filter blur-sm brightness-75" : ""}`}
-                      poster={course.posterUrl ? `http://localhost:5000${course.posterUrl}` : "/video-placeholder.png"}
+                      poster={course.posterUrl ? `${API_URL}${course.posterUrl}` : "/video-placeholder.png"}
                       muted
                     />
                     {!allowed && (

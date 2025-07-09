@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { UserIcon } from "@heroicons/react/24/outline";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance, { API_URL } from "../utils/axiosInstance";
 
 function VideoCard({ video, idx, courseId, refreshCourse }) {
   const handleDelete = async () => {
@@ -14,10 +14,10 @@ function VideoCard({ video, idx, courseId, refreshCourse }) {
   return (
     <div className="bg-[#6B6B8D] rounded-xl p-4 flex flex-col items-center relative">
       <video
-        src={`http://localhost:5000${video.url}`}
+        src={video.url ? `${API_URL}${video.url}` : undefined}
         controls
         className="w-full h-32 rounded bg-black mb-2"
-        poster={video.poster ? `http://localhost:5000${video.poster}` : undefined}
+        poster={video.poster ? `${API_URL}${video.poster}` : undefined}
       />
       <div className="text-white font-semibold">{video.title || "Видео"}</div>
       <button
@@ -120,7 +120,7 @@ export default function CourseDetail() {
           <div className="w-32 h-32 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-4 border-indigo-900">
             {course.posterUrl ? (
               <img
-                src={`http://localhost:5000${course.posterUrl}`}
+                src={course.posterUrl ? `${API_URL}${course.posterUrl}` : undefined}
                 alt={course.title}
                 className="w-full h-full object-cover"
               />
