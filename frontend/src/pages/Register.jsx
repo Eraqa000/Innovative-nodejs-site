@@ -1,5 +1,8 @@
+// src/pages/Register.jsx
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchWithCredentials } from "../api"; // ✅ импорт правильной функции
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -10,17 +13,23 @@ export default function Register() {
   async function handleRegister(e) {
     e.preventDefault();
     setError("");
-    const res = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-      credentials: "include",
-    });
-    if (res.ok) {
-      navigate("/login");
-    } else {
-      const data = await res.json().catch(() => ({}));
-      setError(data.message || "Ошибка регистрации");
+
+    try {
+      const res = await fetchWithCredentials("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        navigate("/login");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.message || "Ошибка регистрации");
+      }
+    } catch (err) {
+      console.error("Ошибка запроса:", err);
+      setError("Ошибка сети или сервера");
     }
   }
 
@@ -55,7 +64,10 @@ export default function Register() {
         </button>
         {error && <div className="text-red-400 text-center">{error}</div>}
         <p className="text-center text-gray-300 text-sm mt-2">
-          Уже есть аккаунт? <a href="/login" className="text-green-300 underline">Войти</a>
+          Уже есть аккаунт?{" "}
+          <a href="/login" className="text-green-300 underline">
+            Войти
+          </a>
         </p>
       </form>
     </div>
