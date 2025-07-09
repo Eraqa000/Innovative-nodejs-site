@@ -15,7 +15,9 @@ const app = express();
 
 const allowedOrigins = [
   process.env.LOCAL_ORIGIN || 'http://localhost:5173',
-  process.env.PROD_ORIGIN || 'https://innovative-nodejs-site.vercel.app'
+  process.env.PROD_ORIGIN || 'https://innovative-nodejs-site.vercel.app',
+  'https://innovative-nodejs-site-1.vercel.app',
+  'https://innovative-nodejs-site-1.onrender.com'
 ];
 
 app.use(cors({

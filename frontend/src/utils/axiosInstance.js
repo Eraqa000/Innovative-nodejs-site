@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const API_URL =
   import.meta.env.MODE === "production"
-    ? "https://innovative-nodejs-site-1.onrender.com"
-    : "http://localhost:5000";
+    ? "https://innovative-nodejs-site-1.onrender.com/api"
+    : "http://localhost:5000/api";
 
 const axiosInstance = axios.create({
   baseURL: API_URL, // из .env файла
